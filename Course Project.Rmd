@@ -1,0 +1,122 @@
+---
+title: "Practical Machine Learning - Course Project"
+author: "Elvan Ceyhan"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+  pdf_document:
+    keep_tex: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.width=6, fig.height=4)
+```
+
+## Introduction
+
+The goal of this project is to predict the manner in which participants performed barbell exercises using accelerometer data collected from the belt, forearm, arm, and dumbbell. The target variable, `classe`, indicates the type of exercise. This report describes the steps taken to clean the data, train a model, evaluate its performance, and predict outcomes for a test dataset. 
+
+## Data Loading and Preprocessing
+
+### Load Required Libraries
+```{r libraries, message=FALSE, warning=FALSE}
+library(caret)
+library(randomForest)
+library(dplyr)
+library(ggplot2)
+```
+
+### Load and Clean Data
+The training and testing datasets were loaded and preprocessed to remove columns with missing values and irrelevant features, such as timestamps.
+
+```{r data-loading}
+train_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+test_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+
+train_data <- read.csv(train_url, na.strings = c("NA", "#DIV/0!", ""))
+test_data <- read.csv(test_url, na.strings = c("NA", "#DIV/0!", ""))
+
+# Remove columns with mostly missing values
+train_data <- train_data[, colSums(is.na(train_data)) == 0]
+test_data <- test_data[, colSums(is.na(test_data)) == 0]
+
+# Remove irrelevant columns
+irr_cols <- c("X", "user_name", "raw_timestamp_part_1", "raw_timestamp_part_2",
+              "cvtd_timestamp", "new_window", "num_window")
+train_data <- train_data %>% select(-one_of(irr_cols))
+test_data <- test_data %>% select(-one_of(irr_cols))
+```
+
+## Data Partitioning
+The training dataset was split into 70% for training and 30% for validation.
+
+```{r data-partitioning}
+set.seed(123)
+in_train <- createDataPartition(train_data$classe, p = 0.7, list = FALSE)
+train_set <- train_data[in_train, ]
+valid_set <- train_data[-in_train, ]
+
+# Ensure 'classe' is a factor
+train_set$classe <- as.factor(train_set$classe)
+valid_set$classe <- as.factor(valid_set$classe)
+```
+
+## Model Training
+We used a Random Forest classifier due to its robustness and high performance for classification tasks.
+
+```{r model-training, cache=TRUE}
+set.seed(123)
+rf_mod <- randomForest(classe ~ ., data = train_set, importance = TRUE, ntree = 100)
+```
+
+## Model Evaluation
+The model was evaluated on the validation set, achieving an accuracy of 99.54%.
+
+```{r model-evaluation, cache=TRUE}
+rf_preds <- predict(rf_mod, valid_set)
+conf_mat <- confusionMatrix(rf_preds, valid_set$classe)
+print(conf_mat)
+
+# Calculate expected out-of-sample error
+oos_err <- 1 - conf_mat$overall['Accuracy']
+print(paste("Expected Out-of-Sample Error:", round(oos_err, 4)))
+```
+
+### Confusion Matrix
+```{r confusion-matrix, echo=FALSE, cache=TRUE}
+knitr::kable(conf_mat$table)
+```
+
+The model's confusion matrix indicates strong performance across all classes.
+
+## Predictions on Test Data
+The trained model was applied to the test dataset to predict the 20 test cases.
+
+```{r test-predictions, cache=TRUE}
+test_preds <- predict(rf_mod, test_data)
+
+print(test_preds)
+```
+
+## Discussion and Conclusion
+
+### Main Decisions
+
+- **Model Choice**: Random Forest was selected due to its ability to handle high-dimensional data and provide feature importance metrics.
+- **Cross-Validation**: A 70%-30% train-validation split ensured robust performance evaluation.
+- **Preprocessing**: Removing irrelevant and missing value-heavy columns reduced noise in the data.
+
+### Expected Out-of-Sample Error
+The expected out-of-sample error is approximately 0.46%, demonstrating excellent model performance.
+
+### Future Improvements
+Further enhancements could include:
+
+- Hyperparameter tuning for the Random Forest model.
+- Exploration of ensemble methods for even better accuracy.
+
+
+### References
+1. Data Source: [Weight Lifting Exercise Dataset](http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har)
+2. Random Forest: Breiman, L. (2001). Random Forests. Machine Learning.
