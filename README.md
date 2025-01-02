@@ -12,7 +12,7 @@ The repository includes the following files:
  How to View the Report
  View via GitHub Pages
 If GitHub Pages is enabled, you can view the report directly in your browser:
-- View the HTML Report at https://yourusername.github.io/Coursera-Practical-ML-Project/
+- View the HTML Report at https://github.com/elvanceyhan/Coursera-Practical-ML-Project
  Local Viewing (Especially if the above viewing option fails)
 1. Download the Course-Project.html file from the repository.
 2. Open the file in any web browser to view the analysis.
