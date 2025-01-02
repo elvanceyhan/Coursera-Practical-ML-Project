@@ -1638,15 +1638,13 @@ variable, <code>classe</code>, indicates the type of exercise. This
 report describes the steps taken to clean the data, train a model,
 evaluate its performance, and predict outcomes for a test dataset.</p>
 </div>
-<div id="data-loading-and-preprocessing" class="section level2">
-<h2>Data Loading and Preprocessing</h2>
-<div id="load-required-libraries" class="section level3">
-<h3>Load Required Libraries</h3>
+<div id="preprocessing" class="section level2">
+<h2>Preprocessing</h2>
+<p>Load Required Libraries</p>
 <pre class="r"><code>library(caret)
 library(randomForest)
 library(dplyr)
 library(ggplot2)</code></pre>
-</div>
 <div id="load-and-clean-data" class="section level3">
 <h3>Load and Clean Data</h3>
 <p>The training and testing datasets were loaded and preprocessed to
@@ -1691,8 +1689,8 @@ rf_mod &lt;- randomForest(classe ~ ., data = train_set, importance = TRUE, ntree
 </div>
 <div id="model-evaluation" class="section level2">
 <h2>Model Evaluation</h2>
-<p>The model was evaluated on the validation set, achieving an accuracy
-of 99.54%.</p>
+<p>We evaluate the model on the validation set, achieving an accuracy of
+99.54%.</p>
 <pre class="r"><code>rf_preds &lt;- predict(rf_mod, valid_set)
 conf_mat &lt;- confusionMatrix(rf_preds, valid_set$classe)
 print(conf_mat)</code></pre>
@@ -1700,40 +1698,39 @@ print(conf_mat)</code></pre>
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 1674    5    0    0    0
-##          B    0 1130    2    0    0
+##          A 1673    5    0    0    0
+##          B    1 1130    2    0    0
 ##          C    0    4 1024    8    4
 ##          D    0    0    0  956    4
 ##          E    0    0    0    0 1074
 ## 
 ## Overall Statistics
-##                                          
-##                Accuracy : 0.9954         
-##                  95% CI : (0.9933, 0.997)
-##     No Information Rate : 0.2845         
-##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16      
-##                                          
-##                   Kappa : 0.9942         
-##                                          
-##  Mcnemar&#39;s Test P-Value : NA             
+##                                           
+##                Accuracy : 0.9952          
+##                  95% CI : (0.9931, 0.9968)
+##     No Information Rate : 0.2845          
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+##                                           
+##                   Kappa : 0.994           
+##                                           
+##  Mcnemar&#39;s Test P-Value : NA              
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            1.0000   0.9921   0.9981   0.9917   0.9926
-## Specificity            0.9988   0.9996   0.9967   0.9992   1.0000
-## Pos Pred Value         0.9970   0.9982   0.9846   0.9958   1.0000
-## Neg Pred Value         1.0000   0.9981   0.9996   0.9984   0.9983
+## Sensitivity            0.9994   0.9921   0.9981   0.9917   0.9926
+## Specificity            0.9988   0.9994   0.9967   0.9992   1.0000
+## Pos Pred Value         0.9970   0.9974   0.9846   0.9958   1.0000
+## Neg Pred Value         0.9998   0.9981   0.9996   0.9984   0.9983
 ## Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
-## Detection Rate         0.2845   0.1920   0.1740   0.1624   0.1825
-## Detection Prevalence   0.2853   0.1924   0.1767   0.1631   0.1825
-## Balanced Accuracy      0.9994   0.9958   0.9974   0.9954   0.9963</code></pre>
-<pre class="r"><code># Calculate expected out-of-sample error
+## Detection Rate         0.2843   0.1920   0.1740   0.1624   0.1825
+## Detection Prevalence   0.2851   0.1925   0.1767   0.1631   0.1825
+## Balanced Accuracy      0.9991   0.9957   0.9974   0.9954   0.9963</code></pre>
+<pre class="r"><code># Expected out-of-sample error
 oos_err &lt;- 1 - conf_mat$overall[&#39;Accuracy&#39;]
 print(paste(&quot;Expected Out-of-Sample Error:&quot;, round(oos_err, 4)))</code></pre>
-<pre><code>## [1] &quot;Expected Out-of-Sample Error: 0.0046&quot;</code></pre>
-<div id="confusion-matrix" class="section level3">
-<h3>Confusion Matrix</h3>
+<pre><code>## [1] &quot;Expected Out-of-Sample Error: 0.0048&quot;</code></pre>
+<p><strong>Confusion Matrix</strong></p>
 <table>
 <thead>
 <tr class="header">
@@ -1791,7 +1788,6 @@ print(paste(&quot;Expected Out-of-Sample Error:&quot;, round(oos_err, 4)))</code
 <p>The model’s confusion matrix indicates strong performance across all
 classes.</p>
 </div>
-</div>
 <div id="predictions-on-test-data" class="section level2">
 <h2>Predictions on Test Data</h2>
 <p>The trained model was applied to the test dataset to predict the 20
@@ -1805,8 +1801,7 @@ print(test_preds)</code></pre>
 </div>
 <div id="discussion-and-conclusion" class="section level2">
 <h2>Discussion and Conclusion</h2>
-<div id="main-decisions" class="section level3">
-<h3>Main Decisions</h3>
+<p><strong>Main Decisions:</strong></p>
 <ul>
 <li><strong>Model Choice</strong>: Random Forest was selected due to its
 ability to handle high-dimensional data and provide feature importance
@@ -1816,20 +1811,15 @@ ensured robust performance evaluation.</li>
 <li><strong>Preprocessing</strong>: Removing irrelevant and missing
 value-heavy columns reduced noise in the data.</li>
 </ul>
-</div>
-<div id="expected-out-of-sample-error" class="section level3">
-<h3>Expected Out-of-Sample Error</h3>
-<p>The expected out-of-sample error is approximately 0.46%,
-demonstrating excellent model performance.</p>
-</div>
-<div id="future-improvements" class="section level3">
-<h3>Future Improvements</h3>
-<p>Further enhancements could include:</p>
+<p><strong>Expected Out-of-Sample Error:</strong> The expected
+out-of-sample error is approximately 0.46%, demonstrating excellent
+model performance.</p>
+<p><strong>Future Improvements:</strong> Further enhancements could
+include:</p>
 <ul>
 <li>Hyperparameter tuning for the Random Forest model.</li>
 <li>Exploration of ensemble methods for even better accuracy.</li>
 </ul>
-</div>
 <div id="references" class="section level3">
 <h3>References</h3>
 <ol style="list-style-type: decimal">

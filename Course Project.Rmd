@@ -17,9 +17,9 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.width=6
 
 The goal of this project is to predict the manner in which participants performed barbell exercises using accelerometer data collected from the belt, forearm, arm, and dumbbell. The target variable, `classe`, indicates the type of exercise. This report describes the steps taken to clean the data, train a model, evaluate its performance, and predict outcomes for a test dataset. 
 
-## Data Loading and Preprocessing
+## Preprocessing
 
-### Load Required Libraries
+Load Required Libraries
 ```{r libraries, message=FALSE, warning=FALSE}
 library(caret)
 library(randomForest)
@@ -71,19 +71,19 @@ rf_mod <- randomForest(classe ~ ., data = train_set, importance = TRUE, ntree = 
 ```
 
 ## Model Evaluation
-The model was evaluated on the validation set, achieving an accuracy of 99.54%.
+We evaluate the model on the validation set, achieving an accuracy of 99.54%.
 
 ```{r model-evaluation, cache=TRUE}
 rf_preds <- predict(rf_mod, valid_set)
 conf_mat <- confusionMatrix(rf_preds, valid_set$classe)
 print(conf_mat)
 
-# Calculate expected out-of-sample error
+# Expected out-of-sample error
 oos_err <- 1 - conf_mat$overall['Accuracy']
 print(paste("Expected Out-of-Sample Error:", round(oos_err, 4)))
 ```
 
-### Confusion Matrix
+**Confusion Matrix**
 ```{r confusion-matrix, echo=FALSE, cache=TRUE}
 knitr::kable(conf_mat$table)
 ```
@@ -101,16 +101,16 @@ print(test_preds)
 
 ## Discussion and Conclusion
 
-### Main Decisions
+**Main Decisions:**
 
 - **Model Choice**: Random Forest was selected due to its ability to handle high-dimensional data and provide feature importance metrics.
 - **Cross-Validation**: A 70%-30% train-validation split ensured robust performance evaluation.
 - **Preprocessing**: Removing irrelevant and missing value-heavy columns reduced noise in the data.
 
-### Expected Out-of-Sample Error
+**Expected Out-of-Sample Error:**
 The expected out-of-sample error is approximately 0.46%, demonstrating excellent model performance.
 
-### Future Improvements
+**Future Improvements:**
 Further enhancements could include:
 
 - Hyperparameter tuning for the Random Forest model.
